@@ -13,7 +13,9 @@ def configuracion():
     password=os.getenv("password")
     return host,port,database,user,password
 
-host, port, database,user,password = configuracion() 
+
+
+
 
 #API Feriados
 feriadosTable_DF = requests.get("https://api.argentinadatos.com/v1/feriados")
@@ -36,4 +38,23 @@ dataTotal = pd.DataFrame(data["results"]["detalle"])[["codigoMoneda","tipoPase",
 
 dataTotal ["fecha"] = data["results"]["fecha"]
  
+
+
+#Nos conectamos a la base de datos
+def conexionBD ():
+    host, port, database,user,password = configuracion() 
+    conn_string = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{database}")
+    engine = create_engine(conn_string)
+    return engine
+#Funcion para cargar los datos--- cargaDB(Dataframe de la tabla, " nombre de la tabla")
+def cargaDB (df,tablaElegida):
+    try:
+        engine = conexionBD
+        df.to_sql(tablaElegida,con=engine,index=False,if_exists="append",schema='pda')
+        print(f"Los datos se cargaon correctamente {tablaElegida}")
+
+    except Exception as e:
+        print(f"Error BD_01: Error al cargar:{e}")
+
+
 
