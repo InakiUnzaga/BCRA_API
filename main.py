@@ -38,7 +38,8 @@ dataTotal = pd.DataFrame(data["results"]["detalle"])[["codigoMoneda","tipoPase",
 
 dataTotal ["fecha"] = data["results"]["fecha"]
  
-
+print(dataMaestro)
+print(dataTotal)
 
 #Nos conectamos a la base de datos
 def conexionBD ():
