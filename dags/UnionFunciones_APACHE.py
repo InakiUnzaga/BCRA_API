@@ -2,13 +2,16 @@ from datetime import datetime,timedelta
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
+
 import os
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Nivel_1.extraer_BCRA import data_BCRA,maestro_bcra
 from Nivel_1.extraer_Feriados import feriado
 from Nivel_2.TransformBCRA import transformacion_Pd_Parquet_BCRA
+from Nivel_3.LoadBCRA import load_BCRA
 
 
 TAGS= ["BCRA ETL"]
@@ -67,9 +70,17 @@ with dag as dag :
         task_id="Transformacion_Parquet_BCRA",
         python_callable=transformacion_Pd_Parquet_BCRA
     )
+    preLoad=EmptyOperator(
+        task_id="Carga_Informacio_SQL",
+    )
+    third_BCRA_Load=PythonOperator(
+        task_id="Carga_Datos_BCRA",
+        python_callable=load_BCRA,
+        retries=retries,
+    )
 
 
 
 
 
-start_task >> [first_Feriados,first_BCRA,first_BCRA_Maestro] >> second_BCRA_Maestro_Dato >> end_task
+start_task >> [first_Feriados,first_BCRA,first_BCRA_Maestro] >> second_BCRA_Maestro_Dato >> preLoad >> third_BCRA_Load >> end_task
