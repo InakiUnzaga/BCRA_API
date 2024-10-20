@@ -76,6 +76,7 @@ with dag as dag :
     third_BCRA_Load=PythonOperator(
         task_id="Carga_Datos_BCRA",
         python_callable=load_BCRA,
+        op_kwargs={'ti': '{{ task_instance }}'},
         retries=retries,
     )
 
