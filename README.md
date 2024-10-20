@@ -56,16 +56,27 @@ Verificamos si el contenedor levanto correctamente.
 
 
 BCRA_API/
+
 ├── Github/workflow
+
 ├── env/
+
 ├── Dag
+
 ├── docker-compose.yml
+
 ├── dockerfile
+
 ├── Nivel_1
+
 ├── Nivel_2
+
 ├── Nivel_3
+
 ├── Test
+
 ├── requirements.txt
+
 └── README.md
 
 
