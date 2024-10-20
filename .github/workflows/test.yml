@@ -25,13 +25,21 @@ jobs:
           cache: "pip"
 
       - name: Set environment variables for testing
+        run: echo "Environment variables for tests are set."
         env:
           REDSHIFT_HOST: ${{ secrets.REDSHIFT_HOST }}
           REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
           REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
           REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
           REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
-        run: echo "Environment variables for tests are set."
+
+      - name: Verify environment variables
+        run: |
+          echo "Host: $REDSHIFT_HOST"
+          echo "Port: $REDSHIFT_PORT"
+          echo "Database: $REDSHIFT_DB"
+          echo "User: $REDSHIFT_USER"
+
 
       - name: Dependencies
         run: pip install -r requirements.txt
