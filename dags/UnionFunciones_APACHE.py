@@ -84,4 +84,4 @@ with dag as dag :
 
 
 
-start_task >> [first_Feriados,first_BCRA,first_BCRA_Maestro] >> second_BCRA_Maestro_Dato >> preLoad >> third_BCRA_Load >> end_task
+start_task >> [first_BCRA] >> second_BCRA_Maestro_Dato >> preLoad >> third_BCRA_Load >> end_task

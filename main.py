@@ -1,8 +1,11 @@
-import requests
 import pandas as pd
-from dotenv import load_dotenv
+import sqlalchemy
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 import os
+
+
+
 
 def configuracion():
     load_dotenv()
@@ -13,49 +16,18 @@ def configuracion():
     password=os.getenv("password")
     return host,port,database,user,password
 
+host, port, database,user,password = configuracion() 
+engine = create_engine(f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}")
 
+ruta_Pq_bcra = "/BCRA_API/BCRA_data.parquet"
+ruta_Pq_bcraMaestro= "/opt/airflow/data/BCRA_DataMaestro.parquet"
 
+print(ruta_Pq_bcra)
 
+df_BCRA = pd.read_parquet(ruta_Pq_bcra)
+print("Datos:",df_BCRA.head())
 
-#API Feriados
-feriadosTable_DF = requests.get("https://api.argentinadatos.com/v1/feriados")
-feriadosTable_DF = feriadosTable_DF.json()
-TableFeriado= pd.DataFrame(feriadosTable_DF)
-
-#API BCRA
-urlMaestro= "https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Maestros/Divisas"
-urlCotizaciones= f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones"
-MaestroCotizaciones= "https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Maestros/Divisas"
-
-
-#Pandas
-data = requests.get(urlCotizaciones,verify=False).json()
-dataMaestro = requests.get(MaestroCotizaciones,verify=False).json()
-
-dataMaestro = pd.DataFrame(dataMaestro["results"])
-
-dataTotal = pd.DataFrame(data["results"]["detalle"])[["codigoMoneda","tipoPase","tipoCotizacion"]]
-
-dataTotal ["fecha"] = data["results"]["fecha"]
- 
-print(dataMaestro)
-print(dataTotal)
-
-#Nos conectamos a la base de datos
-def conexionBD ():
-    host, port, database,user,password = configuracion() 
-    conn_string = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{database}")
-    engine = create_engine(conn_string)
-    return engine
-#Funcion para cargar los datos--- cargaDB(Dataframe de la tabla, " nombre de la tabla")
-def cargaDB (df,tablaElegida):
-    try:
-        engine = conexionBD
-        df.to_sql(tablaElegida,con=engine,index=False,if_exists="append",schema='pda')
-        print(f"Los datos se cargaon correctamente {tablaElegida}")
-
-    except Exception as e:
-        print(f"Error BD_01: Error al cargar:{e}")
-
-
-
+df_BCRA.to_sql("Tabla_Datos",con=engine,index=False,if_exists="append")
+print("Carga completa ")
+os.remove(ruta_Pq_bcra)
+os.remove(ruta_Pq_bcraMaestro)
