@@ -4,16 +4,17 @@ from psycopg2 import OperationalError
 import os
 import sys
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Nivel_3.LoadBCRA import configuracion
-
-host, port, database,user,password = configuracion()
 
 
 #Verificamos que la conexión a la bd es estable
 def check_Connection_redShift():
-    host, port, database,user,password = configuracion()
+    host = os.getenv('REDSHIFT_HOST')
+    port = os.getenv('REDSHIFT_PORT')
+    database = os.getenv('REDSHIFT_DB')
+    user = os.getenv('REDSHIFT_USER')
+    password = os.getenv('REDSHIFT_PASSWORD')
+    
     try:
         connection = psycopg2.connect(
             dbname=database,
@@ -33,7 +34,7 @@ class Test_RedShift(unittest.TestCase):
     def test_redShift(self):
         connection_status = check_Connection_redShift()
         if isinstance(connection_status,tuple):
-            self.fail(f"No se pudo conectar al RedShift. Verifica los datos del .env o las credenciales")
+            self.fail(f"No se pudo conectar al RedShift. Verifiquen las creedenciales")
 
         else:
             self.assertTrue(connection_status)
