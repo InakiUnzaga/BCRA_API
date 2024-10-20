@@ -15,17 +15,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install python
+      - name: Check out
         uses: actions/checkout@v4
-      - name: Python setup
-        uses: actions/setup-python@5
+      
+      - name: Python set up
+        uses: actions/setup-python@4
         with:
           python-version: "3.12"
           cache: "pip"
-      - run: pip install -r requirements.txt
-
+     
+      - name: Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run test
         run: |
-          source venv/bin/activate
           pytest ./test
