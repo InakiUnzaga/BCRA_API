@@ -13,9 +13,8 @@ from Nivel_1.extraer_Feriados import feriado
 from Nivel_2.TransformBCRA import transformacion_Pd_Parquet_BCRA
 from Nivel_3.LoadBCRA import load_BCRA
 
-
+#Configuración del dag
 TAGS= ["BCRA ETL"]
-
 DAG_ID = "BCRA_ETL"
 DAG_DESCRIPTION = "Se Ejecuta de lunes a viernes"
 DAG_SCHEDULE = "0 17 * * 1-5"
@@ -25,7 +24,7 @@ default_args = {
 retries= 6
 retry_delay = timedelta(minutes=1)
 
-
+#Creación del objeto DAG
 dag = DAG(
     dag_id = DAG_ID,
     description = DAG_DESCRIPTION,
@@ -37,6 +36,7 @@ dag = DAG(
     tags=TAGS
 )
 
+#Tareas a realizar
 with dag as dag :
     start_task=EmptyOperator(
         task_id = "Inicio",
@@ -83,5 +83,5 @@ with dag as dag :
 
 
 
-
+#Sequencia
 start_task >> [first_BCRA] >> second_BCRA_Maestro_Dato >> preLoad >> third_BCRA_Load >> end_task
