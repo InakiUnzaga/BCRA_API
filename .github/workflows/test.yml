@@ -2,20 +2,35 @@ name: Test Python
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: 
+      - "main"
   pull_request:
-    branches: [ $default-branch ]
+    branches:
+      - "main"
 
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
     
+      - name: Setup Python
+        uses: actions/setup-python@4
+        with:
+          python-version: "3.8"
+
+      - name: Install dependecies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
 
       - name: Run test
         run: |
-              python -m unittest discover -s test
+          source venv/bin/activate
+          pytest ./test
