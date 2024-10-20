@@ -86,13 +86,24 @@ BCRA_API/
 
 Credenciales :
 
-Esto es requerido tanto en el .env como en secrets GitHub
+Esto es requerido para GitHub Secrets
 ```
 REDSHIFT_HOST=<tu_host>
 REDSHIFT_PORT=<puerto>
 REDSHIFT_DB=<nombre_base_de_datos>
 REDSHIFT_USER=<usuario>
 REDSHIFT_PASSWORD=<contraseña>
+```
+Credenciales :
+
+Esto es requerido para el .env
+```
+host=<tu_host>
+port=<puerto>
+database=<nombre_base_de_datos>
+user=<usuario>
+password=<contraseña>
+userSchema=<usuario+Schema>
 ```
 
 ID de usuario para airflow :
