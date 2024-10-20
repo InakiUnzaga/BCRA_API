@@ -2,10 +2,6 @@ import unittest
 import psycopg2
 from psycopg2 import OperationalError
 import os
-import sys
-
-
-
 
 #Verificamos que la conexión a la bd es estable
 def check_Connection_redShift():
@@ -14,7 +10,7 @@ def check_Connection_redShift():
     database = os.getenv('REDSHIFT_DB')
     user = os.getenv('REDSHIFT_USER')
     password = os.getenv('REDSHIFT_PASSWORD')
-    
+    print(f"{host},port:{port},db:{database},user:{user,password}")
     try:
         connection = psycopg2.connect(
             dbname=database,
