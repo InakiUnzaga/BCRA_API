@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 import os
 
 
-
-
 def configuracion():
     load_dotenv()
     host = os.getenv("host")
