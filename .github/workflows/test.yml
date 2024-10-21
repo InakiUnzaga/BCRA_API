@@ -1,6 +1,12 @@
 name: Test Python
 
-on: [push, pull_request]
+on:
+  push:
+    branches: 
+      - "main"
+  pull_request:
+    branches:
+      - "main"
 #Para que lo podamos ejecutar manualmente desde github
   workflow_dispatch:
 
