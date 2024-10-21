@@ -130,6 +130,10 @@ Test 2:
 ```
 Verificamos que la conexión de redShift este correcta. Este test nos dira si las credenciales estan bien escritas o si tiene algun problema
 ```
+Test 3:
+```
+Verificamos que la api solamente traiga los día de la semana, ya que los finde semana la api tira error.
+```
 ## Documentation API
 
 [Estadísticas
