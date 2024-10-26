@@ -8,6 +8,7 @@ from airflow.operators.python import PythonOperator
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Nivel_1 import Extraccion_BCRA
+from Nivel_2 import Transformacion_BCRA
 
 
 
@@ -35,17 +36,30 @@ with dag:
         task_id = "Inicia_La_Extración",
     )
     #2
-    Extracion_Operator = PythonOperator(
+    Extraccion_Operator_bcra = PythonOperator(
         task_id = "Extracion_De_Datos_BCRA",
         python_callable=Extraccion_BCRA.Extraccion_Bcra_v1,
+        provide_context=True,
         dag=dag
     )
-    """
-    #3
-    Transformacion_Operator = PythonOperator(
-        task_id = "Transformacion_De_Datos_BCRA",
-        python_callable=Transformacion_BCRA,
+    #2
+    Extraccion_Operator_bcra_Maestro = PythonOperator(
+        task_id = "Extracion_De_Datos_BCRA_Maestro",
+        python_callable=Extraccion_BCRA.Extraccion_Bcra_Maestro,
+        provide_context=True,
+        dag=dag
     )
+
+    
+    #3
+    Transformacion_Operator_Data_Maestro = PythonOperator(
+        task_id = "Transformacion_De_Datos_BCRA_Maestro",
+        python_callable=Transformacion_BCRA.Transformacion_Bcra,
+        provide_context=True,
+        dag=dag
+    )
+
+    """
     #4
     Flag_Intermedia=EmptyOperator(
         task_id="Extracion_Transformacion_OK",
@@ -65,4 +79,4 @@ with dag:
 
 
 #Sequencia
-Flag_Inicio >> Extracion_Operator
+Flag_Inicio >> [Extraccion_Operator_bcra, Extraccion_Operator_bcra_Maestro] >> Transformacion_Operator_Data_Maestro

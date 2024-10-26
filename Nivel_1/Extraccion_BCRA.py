@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-def Extraccion_Bcra_v1():
+def Extraccion_Bcra_v1(**kwargs):
     
     url= f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones?"
     
@@ -10,22 +10,19 @@ def Extraccion_Bcra_v1():
         respose.raise_for_status()
         Json_Bcra = respose.json()
         
-        #Convertimos el json en parquet
-        df= pd.DataFrame(Json_Bcra)
-      
-        #Acomodamos las columnas para que no se rompa el parquet      
-        df_bcra = pd.DataFrame(df["results"]["detalle"])[["codigoMoneda","tipoPase","tipoCotizacion"]]
-
-        df_bcra ["fecha"] = df["results"]["fecha"]
-
+        #Convertimos el json en dataFrame
+        #Acomodamos las columnas   
+        df_bcra = pd.DataFrame(Json_Bcra["results"]["detalle"])[["codigoMoneda","tipoPase","tipoCotizacion"]]
+        df_bcra ["fecha"] = Json_Bcra["results"]["fecha"]
+        
         # el dataframe queda de la siguiente forma: indice(df), codigoMoneda, tipoPase, tipoCotizacion, fecha
         
-
         #Guardamos el dataframe como archivo parquet
-        Ruta_Parquet = "bcra_datos.parquet"
-        df_bcra.to_parquet(Ruta_Parquet,index=False)
-        
-    
+        Ruta_Parquet = "Bcra_Datos.Parquet"
+        df_bcra.to_parquet(Ruta_Parquet,index=True)
+        #Enviamos al path del parquet por xcom, para que se puedan comunicar/trasladar información
+        kwargs["ti"].xcom_push(key="Ruta_Parquet",value=Ruta_Parquet)
+
         return Ruta_Parquet
     
     except requests.exceptions.RequestException as e:
@@ -33,3 +30,32 @@ def Extraccion_Bcra_v1():
     except ValueError as e:
         raise RuntimeError(f"Error al procesar JSON: {str(e)}")
     
+def Extraccion_Bcra_Maestro(**kwargs):
+    
+    url= f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Maestros/Divisas"
+    
+    try:
+        respose = requests.get(url,verify=False)
+        respose.raise_for_status()
+        Json_Bcra_Maestro = respose.json()
+        print(Json_Bcra_Maestro)
+        df_Maestro = pd.DataFrame(Json_Bcra_Maestro["results"])[["codigo","denominacion"]]
+    
+        #Guardamos el dataframe como archivo parquet
+        Ruta_Parquet_Maestro = "Bcra_Datos_Maestro.parquet"
+        df_Maestro.to_parquet(Ruta_Parquet_Maestro,index=True)
+        #Enviamos al path del parquet por xcom, para que se puedan comunicar/trasladar información
+        kwargs["ti"].xcom_push(key="Ruta_Parquet_Maestro",value=Ruta_Parquet_Maestro)
+
+        return Ruta_Parquet_Maestro
+    
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Error al obtener datos: {str(e)}")
+    except ValueError as e:
+        raise RuntimeError(f"Error al procesar JSON: {str(e)}")
+        
+    
+
+
+if __name__ == "__main__":
+    Extraccion_Bcra_Maestro()

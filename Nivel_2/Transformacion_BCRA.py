@@ -4,13 +4,15 @@ import os
 
 def Transformacion_Bcra(ti):
 
-    data_bcra = ti.xcom_pull(task_ids="Extracion_De_Datos_BCRA")
-
-    print( pd.read_parquet(data_bcra))
-
+    #Nos traemos el path donde se guardo el parquet.
+    Data_Bcra_data = ti.xcom_pull(task_ids="Extracion_De_Datos_BCRA")
+    Data_Bcra_Maestro = ti.xcom_pull(task_ids="Extracion_De_Datos_BCRA_Maestro")
+    
+    print( pd.read_parquet(Data_Bcra_data))
+    print( pd.read_parquet(Data_Bcra_Maestro))
     
     
-    return data_bcra
+    return Data_Bcra_data
 
 
 
