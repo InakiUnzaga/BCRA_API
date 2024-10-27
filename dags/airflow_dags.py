@@ -63,7 +63,7 @@ with dag:
     #5
     Carga_Operator=PythonOperator(
         task_id="Carga_SQL",
-        python_callable=Carga_BD_BCRA.carga_Bd_Redshift,
+        python_callable=Carga_BD_BCRA.Carga_BD_Bcra_Maestro,
     )
     #6
     Flag_Finalizacion = EmptyOperator(

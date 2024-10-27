@@ -37,10 +37,7 @@ def Transformacion_Bcra(**kwargs):
         "spread":"float"
     })
 
-    df_M = df_M.astype({
-        "codigo":"string",
-        "denominacion":"string"
-    })
+   
 
     #Guardamos los dataframes como archivo parquet
     Ruta_Parquet = "Bcra_Datos_tranformados.Parquet"
