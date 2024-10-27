@@ -27,29 +27,23 @@ def Carga_BD_Bcra_Maestro(**kwargs):
     Data_Bcra_Maestro = ti.xcom_pull(task_ids="Transformacion_De_Datos_BCRA_Maestro",key="Ruta_Parquet_Maestro")
     df_M = pd.read_parquet(Data_Bcra_Maestro)
 
-
-
-
-    
-
-"""
-    Lo voy a utilizar para un futuro. Por ahora no
+    #Hacemos una consulta al sql y guardamos la informacion en DF_M_ACTUAL
     with engine.connect() as connection:
+        query = f'SELECT * FROM "{userSchema}".denominacion_dim'
+        df_M_actual= pd.read_sql(query, connection)
 
-        for index, row in df_M.iterrows():
-            #Hacemos una consulta a la bd para ver si existe el codigo
-            Check_Query_SQL = text(f'SELECT COUNT(*) FROM "{userSchema}".Denominacion_Dim WHERE codigo = :codigo')
-            resultado = connection.execute(Check_Query_SQL,{"codigo":row["codigo"]}).fetchone()
+    #Filtramos Registros nuevos
+    df_M_nuevos = df_M[~df_M["codigo"].isin(df_M_actual["codigo"])]
 
-            #condicional de si no existe, se inserta
-            if resultado[0] == 0:
-                Insert_Query_SQL = text(f'INSERT INTO "{userSchema}".Denominacion_Dim (codigo, denominacion) values (:codigo, :denominacion)')
-                connection.execute(Insert_Query_SQL, {"codigo":row["codigo"],"denominacion":row["denominacion"]})
-          
+    if not df_M_nuevos.empty:
+        df_M_nuevos.to_sql("denominacion_dim",con=engine,schema=userSchema,if_exists="append",index=False)
+        print(f"Se insertaron registros nuevos a la tabla denominacion_dim")
+    else:
+        print("No hay registros nuevos para actualizar/insertar")
 
-def Carga_Fact_BCRA(**kwargs):
+
+def Carga_BD_Bcra(**kwargs):   
     ti = kwargs["ti"]
     #Guardamos los  parquet en una variable // Usamos el KEY para identificar que xcom queremos bajar/agarrar
-    Data_Bcra = ti.xcom_pull(task_ids="Transformacion_De_Datos_BCRA_Maestro",key="Ruta_Parquet")
-    df = pd.read_parquet(Data_Bcra)
-""" 
+    Data_Bcra_Maestro = ti.xcom_pull(task_ids="Transformacion_De_Datos_BCRA",key="Ruta_Parquet")
+    df_M = pd.read_parquet(Data_Bcra_Maestro)

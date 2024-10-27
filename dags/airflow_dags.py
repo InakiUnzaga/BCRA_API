@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Nivel_1 import Extraccion_BCRA
 from Nivel_2 import Transformacion_BCRA
-from Nivel_3 import Carga_BD_BCRA
+from Nivel_3 import Carga_BD_BCRA, Verificador_Creacion_tablas_Redshift
 
 
 default_args = {
@@ -57,19 +57,29 @@ with dag:
         dag=dag
     )
     #4
+    Verificador_Tablas_BD = PythonOperator(
+        task_id = "Creacion_Verificador_Tablas_BD",
+        python_callable=Verificador_Creacion_tablas_Redshift.Creacion_Verificacion_Tablas,
+        dag=dag
+    )
+    #5
     Flag_Intermedia=EmptyOperator(
         task_id="Extracion_Transformacion_OK",
     )
-    #5
-    Carga_Operator=PythonOperator(
-        task_id="Carga_SQL",
+    #6
+    Carga_Operator_Maestro=PythonOperator(
+        task_id="Carga_SQL_Dimensiones",
         python_callable=Carga_BD_BCRA.Carga_BD_Bcra_Maestro,
     )
-    #6
+    Carga_Operator_dim=PythonOperator(
+        task_id="Carga_SQL_Fact",
+        python_callable=Carga_BD_BCRA.Carga_BD_Bcra_Maestro,
+    )
+    #7
     Flag_Finalizacion = EmptyOperator(
        task_id = "Finalizo_La_Tarea",
     )
 
 
 #Sequencia/orden de como se ejecutan las tareas
-Flag_Inicio >> [Extraccion_Operator_bcra, Extraccion_Operator_bcra_Maestro] >> Transformacion_Operator_Data_Maestro >> Flag_Intermedia >> Carga_Operator >> Flag_Finalizacion
+Flag_Inicio >> [Extraccion_Operator_bcra, Extraccion_Operator_bcra_Maestro] >> Transformacion_Operator_Data_Maestro >> Verificador_Tablas_BD >> Flag_Intermedia >> [Carga_Operator_Maestro,Carga_Operator_dim] >> Flag_Finalizacion
