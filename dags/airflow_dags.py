@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Nivel_1 import Extraccion_BCRA
 from Nivel_2 import Transformacion_BCRA
-
+from Nivel_3 import Carga_BD_BCRA
 
 
 default_args = {
@@ -49,8 +49,6 @@ with dag:
         provide_context=True,
         dag=dag
     )
-
-    
     #3
     Transformacion_Operator_Data_Maestro = PythonOperator(
         task_id = "Transformacion_De_Datos_BCRA_Maestro",
@@ -58,25 +56,20 @@ with dag:
         provide_context=True,
         dag=dag
     )
-
-    """
     #4
     Flag_Intermedia=EmptyOperator(
         task_id="Extracion_Transformacion_OK",
     )
-    
     #5
     Carga_Operator=PythonOperator(
         task_id="Carga_SQL",
-        python_callable=load_BCRA,
+        python_callable=Carga_BD_BCRA.carga_Bd_Redshift,
     )
     #6
-    Finalizacion_Flag = EmptyOperator(
+    Flag_Finalizacion = EmptyOperator(
        task_id = "Finalizo_La_Tarea",
     )
-    """
 
 
-
-#Sequencia
-Flag_Inicio >> [Extraccion_Operator_bcra, Extraccion_Operator_bcra_Maestro] >> Transformacion_Operator_Data_Maestro
+#Sequencia/orden de como se ejecutan las tareas
+Flag_Inicio >> [Extraccion_Operator_bcra, Extraccion_Operator_bcra_Maestro] >> Transformacion_Operator_Data_Maestro >> Flag_Intermedia >> Carga_Operator >> Flag_Finalizacion

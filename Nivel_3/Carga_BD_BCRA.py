@@ -22,7 +22,7 @@ engine = create_engine(f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{
 
 
 #Función para cargar los datos a la bd
-def load_BCRA():
+def carga_Bd_Redshift():
     #Guardamos los  parquet en una variable
     ruta_Pq_bcra = "/opt/airflow/data/BCRA_data.parquet"
     ruta_Pq_bcraMaestro= "/opt/airflow/data/BCRA_DataMaestro.parquet"

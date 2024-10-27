@@ -14,13 +14,13 @@ def Extraccion_Bcra_v1(**kwargs):
         #Acomodamos las columnas   
         df_bcra = pd.DataFrame(Json_Bcra["results"]["detalle"])[["codigoMoneda","tipoPase","tipoCotizacion"]]
         df_bcra ["fecha"] = Json_Bcra["results"]["fecha"]
-        
+        print()
         # el dataframe queda de la siguiente forma: indice(df), codigoMoneda, tipoPase, tipoCotizacion, fecha
         
         #Guardamos el dataframe como archivo parquet
         Ruta_Parquet = "Bcra_Datos.Parquet"
-        df_bcra.to_parquet(Ruta_Parquet,index=True)
-        #Enviamos al path del parquet por xcom, para que se puedan comunicar/trasladar información
+        df_bcra.to_parquet(Ruta_Parquet,index=False)
+        #Enviamos el path del parquet por xcom, para que se puedan comunicar/trasladar información
         kwargs["ti"].xcom_push(key="Ruta_Parquet",value=Ruta_Parquet)
 
         return Ruta_Parquet
@@ -38,13 +38,12 @@ def Extraccion_Bcra_Maestro(**kwargs):
         respose = requests.get(url,verify=False)
         respose.raise_for_status()
         Json_Bcra_Maestro = respose.json()
-        print(Json_Bcra_Maestro)
         df_Maestro = pd.DataFrame(Json_Bcra_Maestro["results"])[["codigo","denominacion"]]
     
         #Guardamos el dataframe como archivo parquet
         Ruta_Parquet_Maestro = "Bcra_Datos_Maestro.parquet"
-        df_Maestro.to_parquet(Ruta_Parquet_Maestro,index=True)
-        #Enviamos al path del parquet por xcom, para que se puedan comunicar/trasladar información
+        df_Maestro.to_parquet(Ruta_Parquet_Maestro,index=False)
+        #Enviamos el path del parquet por xcom, para que se puedan comunicar/trasladar información
         kwargs["ti"].xcom_push(key="Ruta_Parquet_Maestro",value=Ruta_Parquet_Maestro)
 
         return Ruta_Parquet_Maestro
@@ -58,4 +57,4 @@ def Extraccion_Bcra_Maestro(**kwargs):
 
 
 if __name__ == "__main__":
-    Extraccion_Bcra_Maestro()
+    Extraccion_Bcra_v1()
