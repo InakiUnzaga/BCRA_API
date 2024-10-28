@@ -39,13 +39,7 @@ jobs:
 
       - name: Dependencies
         run: pip install -r requirements.txt
-        env:
-          REDSHIFT_HOST: ${{ secrets.REDSHIFT_HOST }}
-          REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
-          REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
-          REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
-          REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
+  
   #Corremos los test
-      - name: Run test
-        run: |
-          pytest -v
+      - name: Run pytest
+        run: PYTHONPATH=$(pwd) pytest -v
