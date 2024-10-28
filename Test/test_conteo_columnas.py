@@ -4,7 +4,8 @@ import sys
 import os
 import pandas as pd
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 
 
 from nivel_1.extraccion_bcra import extraccion_bcra
