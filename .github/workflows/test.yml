@@ -42,4 +42,4 @@ jobs:
       # Corremos los tests
       - name: Run tests
         run: |
-          pytest -v
+          pytest
