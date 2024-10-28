@@ -7,9 +7,10 @@ from airflow.operators.python import PythonOperator
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Nivel_1 import Extraccion_BCRA
-from Nivel_2 import Transformacion_BCRA
-from Nivel_3 import Carga_BD_BCRA, Verificador_Creacion_tablas_Redshift
+from nivel_1 import extraccion_bcra
+from nivel_2 import transformacion_bcra
+from nivel_3 import carga_bd_bcra, verificador_creacion_tablas_redshift
+
 
 
 default_args = {
@@ -32,54 +33,54 @@ dag = DAG(
 # Tareas a realizar
 with dag:
     # 1
-    Flag_Inicio = EmptyOperator(
-        task_id="Inicia_La_Extración",
+    flag_Inicio = EmptyOperator(
+        task_id="inicia_la_extración",
     )
     # 2
-    Extraccion_Operator_bcra = PythonOperator(
-        task_id="Extracion_De_Datos_BCRA",
-        python_callable=Extraccion_BCRA.Extraccion_Bcra,
+    extraccion_operator_bcra = PythonOperator(
+        task_id="extracion_de_datos_bcra",
+        python_callable=extraccion_bcra.extraccion_bcra,
         provide_context=True,
         dag=dag
     )
     # 2
-    Extraccion_Operator_bcra_Maestro = PythonOperator(
-        task_id="Extracion_De_Datos_BCRA_Maestro",
-        python_callable=Extraccion_BCRA.Extraccion_Bcra_Maestro,
+    extraccion_operator_bcra_maestro = PythonOperator(
+        task_id="extracion_de_datos_bcra_maestro",
+        python_callable=extraccion_bcra.extraccion_bcra_maestro,
         provide_context=True,
         dag=dag
     )
     # 3
-    Transformacion_Operator_Data_Maestro = PythonOperator(
-        task_id="Transformacion_De_Datos_BCRA_Maestro",
-        python_callable=Transformacion_BCRA.Transformacion_Bcra,
+    transformacion_operator_data_maestro = PythonOperator(
+        task_id="transformacion_de_datos_bcra_maestro",
+        python_callable=transformacion_bcra.transformacion_bcra,
         provide_context=True,
         dag=dag
     )
     # 4
-    Verificador_Tablas_BD = PythonOperator(
-        task_id="Creacion_Verificador_Tablas_BD",
-        python_callable=Verificador_Creacion_tablas_Redshift.Creacion_Verificacion_Tablas,
+    verificador_tablas_bd = PythonOperator(
+        task_id="creacion_verificador_tablas_bd",
+        python_callable=verificador_creacion_tablas_redshift.creacion_verificacion_tablas,
         dag=dag
     )
     # 5
-    Flag_Intermedia = EmptyOperator(
-        task_id="Extracion_Transformacion_OK",
+    flag_Intermedia = EmptyOperator(
+        task_id="extracion_transformacion_ok",
     )
     # 6
-    Carga_Operator_dim = PythonOperator(
-        task_id="Carga_SQL_Dimensiones",
-        python_callable=Carga_BD_BCRA.Carga_BD_Bcra_Maestro,
+    carga_operator_dim = PythonOperator(
+        task_id="carga_sql_dimensiones",
+        python_callable=carga_bd_bcra.carga_db_bcra_maestro,
     )
-    Carga_Operator_fact = PythonOperator(
-        task_id="Carga_SQL_Fact",
-        python_callable=Carga_BD_BCRA.Carga_BD_Bcra,
+    carga_operator_fact = PythonOperator(
+        task_id="carga_sql_fact",
+        python_callable=carga_bd_bcra.carga_bd_bcra,
     )
     # 7
-    Flag_Finalizacion = EmptyOperator(
-        task_id="Finalizo_La_Tarea",
+    flag_Finalizacion = EmptyOperator(
+        task_id="finalizo_la_tarea",
     )
 
 
 # Sequencia/orden de como se ejecutan las tareas
-Flag_Inicio >> [Extraccion_Operator_bcra, Extraccion_Operator_bcra_Maestro] >> Transformacion_Operator_Data_Maestro >> Verificador_Tablas_BD >> Flag_Intermedia >> [Carga_Operator_dim, Carga_Operator_fact] >> Flag_Finalizacion
+flag_Inicio >> [extraccion_operator_bcra, extraccion_operator_bcra_maestro] >> transformacion_operator_data_maestro >> verificador_tablas_bd >> flag_Intermedia >> [carga_operator_dim, carga_operator_fact] >> flag_Finalizacion

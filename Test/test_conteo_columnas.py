@@ -7,7 +7,7 @@ import pandas as pd
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Nivel_1.Extraccion_BCRA import Extraccion_Bcra
+from nivel_1.extraccion_bcra import extraccion_bcra
 
 
 class Test_extraccion(unittest.TestCase):
@@ -28,7 +28,7 @@ class Test_extraccion(unittest.TestCase):
         mock_ti = mock.Mock()
         kwargs = {"ti": mock_ti}
 
-        ruta_parquet = Extraccion_Bcra(**kwargs)
+        ruta_parquet = extraccion_bcra(**kwargs)
 
         df_resultado = pd.read_parquet(ruta_parquet)
 

@@ -1,21 +1,20 @@
 import pandas as pd
 
 
-def Transformacion_Bcra(**kwargs):
+def transformacion_bcra(**kwargs):
     ti = kwargs["ti"]
     # Nos traemos el path donde se guardo el parquet.
-    Data_Bcra_data = ti.xcom_pull(task_ids="Extracion_De_Datos_BCRA")
-    Data_Bcra_Maestro = ti.xcom_pull(
-        task_ids="Extracion_De_Datos_BCRA_Maestro")
+    data_bcra_data = ti.xcom_pull(task_ids="extracion_de_datos_bcra")
+    data_bcra_maestro = ti.xcom_pull(task_ids="extracion_de_datos_bcra_maestro")
 
     # Leemos los archivos parquet
-    df = pd.read_parquet(Data_Bcra_data)
-    df_M = pd.read_parquet(Data_Bcra_Maestro)
+    df = pd.read_parquet(data_bcra_data)
+    df_m = pd.read_parquet(data_bcra_maestro)
 
     # Realizamos un filtro para que solamente nos traiga las siguientes monedas:
     # Pesos = ARS; Peso Chileno = CLP ; Euro = EUR ; DOLAR E.E.U.U. = USD ; ORO FINO (1 ONZA) = XAU
     df = df[df["codigoMoneda"].isin(["ARS", "CLP", "EUR", "USD", "XAU"])]
-    df_M = df_M[df_M["codigo"].isin(["ARS", "CLP", "EUR", "USD", "XAU" , "BOB"])]
+    df_m = df_m[df_m["codigo"].isin(["ARS", "CLP", "EUR", "USD", "XAU" , "BOB"])]
 
     # Creación de una nueva columna para Data_Bcra_Data
     df["spread"] = df["tipoCotizacion"] - df["tipoPase"]
@@ -27,20 +26,19 @@ def Transformacion_Bcra(**kwargs):
 
     # Reseteamos los indices para que sean consecutivos
     df = df.reset_index(drop=True)
-    df_M = df_M.reset_index(drop=True)
+    df_m = df_m.reset_index(drop=True)
 
     # Guardamos los dataframes como archivo parquet
-    Ruta_Parquet = "Bcra_Datos_tranformados.Parquet"
-    Ruta_Parquet_Maestro = "Bcra_Datos_Maestro_transformados.parquet"
-    df.to_parquet(Ruta_Parquet, index=False)
-    df_M.to_parquet(Ruta_Parquet_Maestro, index=False)
+    ruta_parquet = "bcra_datos_tranformados.parquet"
+    ruta_parquet_maestro = "bcra_datos_maestro_transformados.parquet"
+    df.to_parquet(ruta_parquet, index=False)
+    df_m.to_parquet(ruta_parquet_maestro, index=False)
     # Enviamos el path del parquet por xcom
-    kwargs["ti"].xcom_push(key="Ruta_Parquet_Maestro",
-                           value=Ruta_Parquet_Maestro)
-    kwargs["ti"].xcom_push(key="Ruta_Parquet", value=Ruta_Parquet)
+    kwargs["ti"].xcom_push(key="ruta_parquet_maestro",value=ruta_parquet_maestro)
+    kwargs["ti"].xcom_push(key="ruta_parquet", value=ruta_parquet)
 
-    return Ruta_Parquet, Ruta_Parquet_Maestro
+    return ruta_parquet, ruta_parquet_maestro
 
 
 if __name__ == "__main__":
-    Transformacion_Bcra()
+    transformacion_bcra()

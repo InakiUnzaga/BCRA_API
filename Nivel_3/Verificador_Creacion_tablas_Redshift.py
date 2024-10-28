@@ -14,13 +14,13 @@ def configuracion():
     return host, port, database, user, password, userSchema
 
 
-def Creacion_Verificacion_Tablas() -> None:
+def creacion_verificacion_tablas() -> None:
     host, port, database, user, password, userSchema = configuracion()
     engine = create_engine(
         f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}")
 
     # Funcion para verificar si una tabla existe
-    def Tablas_Existen(table_name: str) -> bool:
+    def tablas_existen(table_name: str) -> bool:
         query = text(
             """
             SELECT EXISTS (
@@ -37,7 +37,7 @@ def Creacion_Verificacion_Tablas() -> None:
             return resultado.scalar()
         # Verificacion de tabla Denominacion_dim
     with engine.begin() as connection:
-        if not Tablas_Existen("denominacion_dim"):
+        if not tablas_existen("denominacion_dim"):
             connection.execute(
                 text(
                     f"""
@@ -53,7 +53,7 @@ def Creacion_Verificacion_Tablas() -> None:
             print("La tabla denominacion_dim ya se encuentra en la base de datos")
     # Verificacion de tabla cotizacion_fact
     with engine.begin() as connection:
-        if not Tablas_Existen("cotizacion_fact"):
+        if not tablas_existen("cotizacion_fact"):
             connection.execute(
                 text(
                     f"""

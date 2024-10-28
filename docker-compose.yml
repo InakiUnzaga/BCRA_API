@@ -76,10 +76,9 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
-    - ${AIRFLOW_PROJ_DIR:-.}/Nivel_1:/opt/airflow/Nivel_1
-    - ${AIRFLOW_PROJ_DIR:-.}/Nivel_2:/opt/airflow/Nivel_2
-    - ${AIRFLOW_PROJ_DIR:-.}/Nivel_3:/opt/airflow/Nivel_3
-    - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
+    - ${AIRFLOW_PROJ_DIR:-.}/nivel_1:/opt/airflow/nivel_1
+    - ${AIRFLOW_PROJ_DIR:-.}/nivel_2:/opt/airflow/nivel_2
+    - ${AIRFLOW_PROJ_DIR:-.}/nivel_3:/opt/airflow/nivel_3
     - ${AIRFLOW_PROJ_DIR:-.}/.env:/opt/airflow/.env
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
@@ -255,10 +254,9 @@ services:
       - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
       - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
       - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-      - ${AIRFLOW_PROJ_DIR:-.}/Nivel_1:/opt/airflow/Nivel_1
-      - ${AIRFLOW_PROJ_DIR:-.}/Nivel_2:/opt/airflow/Nivel_2
-      - ${AIRFLOW_PROJ_DIR:-.}/Nivel_3:/opt/airflow/Nivel_3
-      - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
+      - ${AIRFLOW_PROJ_DIR:-.}/nivel_1:/opt/airflow/nivel_1
+      - ${AIRFLOW_PROJ_DIR:-.}/nivel_2:/opt/airflow/nivel_2
+      - ${AIRFLOW_PROJ_DIR:-.}/nivel_3:/opt/airflow/nivel_3
 
   airflow-cli:
     <<: *airflow-common
