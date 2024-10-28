@@ -34,4 +34,12 @@ jobs:
           REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
           REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
           REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
-       
+          REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+  
+      # Corremos los tests
+      - name: Run tests
+        run: |
+          pytest -v
