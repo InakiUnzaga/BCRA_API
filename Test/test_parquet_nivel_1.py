@@ -7,7 +7,7 @@ from unittest import mock
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-from nivel_1.extraccion_bcra import extraccion_bcra
+from Nivel_1.extraccion_bcra import extraccion_bcra
 
 
 class Test_Parquet_Creacion(unittest.TestCase):

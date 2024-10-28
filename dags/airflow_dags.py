@@ -7,9 +7,9 @@ from airflow.operators.python import PythonOperator
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from nivel_1 import extraccion_bcra
-from nivel_2 import transformacion_bcra
-from nivel_3 import carga_bd_bcra, verificador_creacion_tablas_redshift
+from Nivel_1 import extraccion_bcra
+from Nivel_2 import transformacion_bcra
+from Nivel_3 import carga_bd_bcra, verificador_creacion_tablas_redshift
 
 
 
