@@ -4,7 +4,7 @@ import sys
 import unittest.mock
 from unittest import mock
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 from nivel_1.extraccion_bcra import extraccion_bcra
