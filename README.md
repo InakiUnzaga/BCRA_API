@@ -1,10 +1,96 @@
 
 # BCRA_API
 
-En esta aplicación utilizamos Python, Docker y Apache Airflow para extraer el valor del dólar del BCRA de lunes a viernes. Estos datos se cargan en una base de datos Redshift para mantener la información actualizada y permitir comparaciones o análisis históricos.
+Esta aplicación utiliza Python,Docker y Apache Airflow para extraer el valor del dólar desde la API del Banco Central de la República Argentina (BCRA) de lunes a viernes. Los datos se cargan en una base de dados Redshift para mantener la información actualizada y permitir comparaciones o análisis historicos.
 
 
-## Run in - python
+# Proceso ETL
+
+El flujo sigue un proceso definido, dividido en tres niveles:
+
+## nivel_1: Extracción
+
+La extracion se realiza mediante las funciones: 
+
+extraccion_bcra: Conecta a la API para obtener las cotizaciones diarias de diferentes monedas (USD, ARS, EUR)
+extraccion_bcra_maestro: Se conecta a la API del BCRA para sacar información sobre las denominaciones de las divisas
+
+Los datos se almacenan en archivos Parquet para facilitar el procesamiento en etapas posteriores
+
+ambas funciones se encuentran en el archivo extraccion_bcra.py del directorio nivel_1
+
+## nivel_2: Transformación
+
+La tranformación se realiza con la función transformacion_bcra:
+
+Se filtran monedas importante y se calcula el spread (diferencia entre cotización y pase).
+
+los datos transformados se guardan en archivos Parquet.
+
+esta función se encuentra en el archivo transformacion_bcra.py del directorio nivel_2
+
+
+## nivel_3: Carga
+La carga se hace mediante las funciones:
+
+carga_bd_bcra_maestro: Inserta/crea nuevas denominaciones a la tabla denominacion_dim
+
+carga_bd_bcra: Inserta/crea las cotizaciones transformadas en la tabla cotizacion_fact, evitando la duplicación de los valores
+
+creacion_verificacion_tablas: Crea las tablas denominacion_dim y cotizacion_fact en la base de datos si no existen, asegurando la estructura de datos necesaria para la carga. En el caso que la tabla ya exista, no sera creada ya que detecta la existencia de esta.
+
+Estas funciones se encuentran en los archivos carga_db_bcra.py y verificador_cracion_tablas_redshift.py del directorio nivel_3.
+
+
+# DAGs - Apache Airflow
+
+#Qué es un DAG?
+Un DAG representa un flujo de tareas en apache airflow. Define la secuencia en la que se van a ejecutar las tareas y se utiliza para organizar el flujo ETL de forma secuencial o paralela.
+
+#DAG - bcra_etl
+En el proyecto, el DAG se encarga de automatizar el flujo de datos desde la extracción de la API del BCRA hasta la carga en la base de datos Redshift
+
+Este DAG sigue los siguientes pasos:
+
+#1: definición del DAG: 
+
+Esta configurado para ejecutarse de lunes a viernes a las 17hs, utilizando el tipado "0 17 * * 1-5". Se define los parametros basicos del DAG, como el numero de reintentos, el tiempo de espera entre intentos, y el tiempo maximo de ejecución
+
+```
+dag = DAG(
+    dag_id="bcra_etl",
+    description="Se Ejecuta de lunes a viernes",
+    catchup=False,
+    schedule_interval="0 17 * * 1-5",
+    max_active_runs=1,
+    dagrun_timeout=timedelta(seconds=2000),
+    default_args=default_args
+)
+```
+#2: Flags en el DAG:
+Las flags se implementan mediante operadores vacíos(EmptyOperator) y sirve para estructurar el flujo de trabajo:
+
+flag_inicio: Marca el inicio del flujo de trabajo, asegurando que todas las tareas de extracción se ejecuten en paralelo.
+
+flag_intermedia: Marca la transición entre la transformación y la carga.
+
+flag_finalizacion: Indica la finalización del flujo ETL, indica que todas las tareas de carga se completaron exitosamente. 
+
+#Secuencia completa del dag:
+```
+flag_Inicio >> [extraccion_operator_bcra, extraccion_operator_bcra_maestro] >> transformacion_operator_data_maestro >> verificador_tablas_bd >> flag_Intermedia >> [carga_operator_dim, carga_operator_fact] >> flag_Finalizacion
+```
+[ ] = Ejecutan en paralelo 
+>> = Dirreción
+
+Sequencia vista desde la pagina de apache airflow:
+![image](https://github.com/user-attachments/assets/421afb47-d1fd-4201-95d7-472684e3ec4f)
+
+Color verde: Flags
+
+Color rojo: funciones
+
+## Ejecución del proyecto
 
 Clona el proyecto
 
