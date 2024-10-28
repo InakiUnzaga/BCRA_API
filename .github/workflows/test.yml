@@ -43,5 +43,4 @@ jobs:
   #Corremos los test
       - name: Run tests
         run: |
-        export PYTHONPATH=$(pwd)
         pytest -v
