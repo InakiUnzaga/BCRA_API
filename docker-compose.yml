@@ -53,6 +53,7 @@ x-airflow-common:
   build: .
   environment:
     &airflow-common-env
+    AIRFLOW__CORE__BASE_LOG_FOLDER: /opt/airflow/logs
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
@@ -80,7 +81,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/nivel_2:/opt/airflow/nivel_2
     - ${AIRFLOW_PROJ_DIR:-.}/nivel_3:/opt/airflow/nivel_3
     - ${AIRFLOW_PROJ_DIR:-.}/.env:/opt/airflow/.env
-  user: "${AIRFLOW_UID:-50000}:0"
+  user: "0:0"
   depends_on:
     &airflow-common-depends-on
     redis:
