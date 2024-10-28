@@ -7,7 +7,7 @@ import pandas as pd
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Nivel_1.extraccion_bcra import Extraccion_Bcra
+from Nivel_1.Extraccion_BCRA import Extraccion_Bcra
 
 
 class Test_extraccion(unittest.TestCase):
