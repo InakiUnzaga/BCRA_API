@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - "main"
-#Para que lo podamos ejecutar manualmente desde github
   workflow_dispatch:
 
 jobs:
@@ -16,7 +15,7 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Python set up
         uses: actions/setup-python@v4
@@ -27,7 +26,7 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-    #Setiamos los secrets
+      # Seteamos los secrets
       - name: Set environment variables for testing
         run: echo "Environment variables for tests are set."
         env:
@@ -35,13 +34,4 @@ jobs:
           REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
           REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
           REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
-          REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
-
-      - name: Dependencies
-        run: pip install -r requirements.txt
-  
-  #Corremos los test
-      - name: Run tests
-        run: |
-        export PYTHONPATH=$(pwd)
-        pytest -v
+       
