@@ -21,7 +21,7 @@ default_args = {
 
 # Creación del objeto DAG
 dag = DAG(
-    dag_id="BCRA_ETL",
+    dag_id="bcra_etl",
     description="Se Ejecuta de lunes a viernes",
     catchup=False,
     schedule_interval="0 17 * * 1-5",

@@ -1,53 +1,33 @@
-name: Test Python
+name: Python Package
 
 on:
   push:
-    branches: 
-      - "main"
+    branches:
+      - main
   pull_request:
     branches:
-      - "main"
-#Para que lo podamos ejecutar manualmente desde github
-  workflow_dispatch:
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out
-        uses: actions/checkout@v2
-      
-      - name: Python set up
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
-          cache: "pip"
-    #Setiamos los secrets
-      - name: Set environment variables for testing
-        run: echo "Environment variables for tests are set."
-        env:
-          REDSHIFT_HOST: ${{ secrets.REDSHIFT_HOST }}
-          REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
-          REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
-          REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
-          REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
+          python-version: '3.12'
 
-      - name: Dependencies
-        run: pip install -r requirements.txt
-        env:
-          REDSHIFT_HOST: ${{ secrets.REDSHIFT_HOST }}
-          REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
-          REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
-          REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
-          REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
-  #Corremos los test
-      - name: Run test
+      - name: Set up Python Path
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Install dependencies
         run: |
-          pytest -v
-        env:
-          REDSHIFT_HOST: ${{ secrets.REDSHIFT_HOST }}
-          REDSHIFT_PORT: ${{ secrets.REDSHIFT_PORT }}
-          REDSHIFT_DB: ${{ secrets.REDSHIFT_DB }}
-          REDSHIFT_USER: ${{ secrets.REDSHIFT_USER }}
-          REDSHIFT_PASSWORD: ${{ secrets.REDSHIFT_PASSWORD }}
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with pytest
+        run: pytest -v
